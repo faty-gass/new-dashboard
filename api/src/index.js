@@ -1,6 +1,7 @@
 import Fastify from 'fastify'
 import dotenv from 'dotenv'
 import * as db from './db-connect.js'
+import fastifyJwt from 'fastify-jwt'
 
 import routes from './routes/index.js';
 
@@ -30,6 +31,7 @@ fastify.register(
     prefix: '/api'
   }
 );
+fastify.register(fastifyJwt,{secret : process.env.JWT_SECRET})
 
 //fastify.get('/', (req, res) => res.redirect(webappUrl));
 
