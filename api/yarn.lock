@@ -671,6 +671,14 @@ fastfall@^1.5.0:
   dependencies:
     reusify "^1.0.0"
 
+fastify-auth@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/fastify-auth/-/fastify-auth-1.1.0.tgz#75076c9c0664addaff07078907db6432086be1d6"
+  integrity sha512-8IajmAZB3QJ3wTP0q8Z3TG9DkxrIcAlS85TdPCBEfJi3mMKQd/sCYxtZ0dYv11v5hZaJ9z8XmNzhK3AH6/JpNw==
+  dependencies:
+    fastify-plugin "^3.0.0"
+    reusify "^1.0.4"
+
 fastify-cors@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/fastify-cors/-/fastify-cors-5.2.0.tgz#a92af64d9b7df1cd736c90ecd894a7b23c0cd75a"

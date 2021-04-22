@@ -39,25 +39,54 @@ export const signup = async (req, reply) =>{
       message : "Error occured while creating new user"
     })
   }
-
-/*   try {
-    const token = jwt.sign({email : req.body.email}, process.env.JWT_SECRET)
-    if (token) {
-      return reply.code(200)
-      .send({ name : req.body , email : req.body.email, token })
-    } else {
-      return reply.code(400)
-        .send({message : "invalid request body"})
-    }
- 
-  } catch (err){
-    console.log(err)
-  } */
-
 }
 
 // log a user in & send a token
-export const signin = (body) =>{
-  const token = jwt.sign({email : body.email}, process.env.JWT_SECRET)
-  return { name : body.name , email : body.email, token }
+export const signin = async (req, reply) =>{
+  try {
+    const user = await User.findOne({email : req.body.email})
+    if (user){
+      // check password
+      const pwdValid = await bcrypt.compare(req.body.password, user.password)
+      if (pwdValid){
+        const token = jwt.sign({id : user._id, name : user.name, role : user.role}, process.env.JWT_SECRET)
+        return reply.code(200)
+        .send({
+          token 
+        })
+      } else {
+        return reply.code(401)
+        .send({
+          message : "Access denied"
+        })
+      }
+    } else {
+      return reply.code(404)
+      .send({
+        message : "No user found"
+      })
+    }
+
+  } catch (e) {
+    console.error(e)
+    return reply.code(500)
+    .send({
+      message : "Error occured in login process"
+    })
+  }
+}
+
+export const getUser = async (req, reply) => {
+  if(req.tokenData){
+    return reply.code(200)
+    .send({
+      user : req.tokenData
+    })
+  } else {
+    return reply.code(401)
+    .send({
+      message : "Invalid token"
+    })
+  }
+
 }

@@ -2,8 +2,10 @@ import Fastify from 'fastify'
 import dotenv from 'dotenv'
 import * as db from './db-connect.js'
 import fastifyJwt from 'fastify-jwt'
+import fastifyAuth from 'fastify-auth'
 
 import routes from './routes/index.js';
+import decorator from './decorator.js'
 
 dotenv.config()
 
@@ -22,8 +24,11 @@ const fastify = Fastify({
 
 //Plugins
 fastify.register(db)
+fastify.register(fastifyJwt,{secret : process.env.JWT_SECRET})
+fastify.register(fastifyAuth)
 fastify.register(
   (instance, opts, done) => {
+    decorator(instance);
     routes(instance);
     done();
   },
@@ -31,7 +36,7 @@ fastify.register(
     prefix: '/api'
   }
 );
-fastify.register(fastifyJwt,{secret : process.env.JWT_SECRET})
+
 
 //fastify.get('/', (req, res) => res.redirect(webappUrl));
 
