@@ -13,6 +13,8 @@ export const signup = async (req, reply) =>{
             message : "Mail already in use"
           })
       } else{
+        // TO DO : check mail format
+        // TO DO : strong password control 
         const hashPwd = await bcrypt.hash(req.body.password, 10)
         const newUser = new User ({
           name : req.body.name,

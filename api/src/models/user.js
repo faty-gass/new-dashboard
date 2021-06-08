@@ -5,8 +5,7 @@ const schema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
-      index: true
+      required: true
     },
     email: {
       type: String,
