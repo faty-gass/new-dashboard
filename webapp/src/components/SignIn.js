@@ -5,7 +5,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
+//import Link from '@material-ui/core/Link';
+import {Link }from 'react-router-dom'
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
@@ -44,6 +45,20 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  link: {
+    color : '#0000FF',
+    textDecoration: 'none',
+    '&:hover': {
+      textDecoration: 'underline',
+      textDecorationStyle: 'solid'
+    },
+    '&:active':{
+      color : 'purple'
+    },
+    '&:visited': {
+      color : 'purple'
+    }
+  }
 }));
 
 export default function SignIn() {
@@ -99,12 +114,12 @@ export default function SignIn() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link href="#" className={classes.link} >
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link to="/signup" className={classes.link}>
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
