@@ -41,7 +41,7 @@ fastify.register(
 //fastify.get('/', (req, res) => res.redirect(webappUrl));
 
 //Run the server
-fastify.listen(3000, function (err, address) {
+fastify.listen(8080, function (err, address) {
   if (err) {
     fastify.log.error(err)
     process.exit(1)
