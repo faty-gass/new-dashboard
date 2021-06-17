@@ -1,10 +1,9 @@
-import logo from './logo.svg';
+//import logo from './logo.svg';
 import './App.css';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
 } from "react-router-dom";
 import SignUp from './components/SignUp.js'
 import SignIn from './components/SignIn.js'
