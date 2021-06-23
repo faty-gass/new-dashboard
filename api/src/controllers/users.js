@@ -8,7 +8,7 @@ export const listUsers = async ( req , reply) => {
       .send ( allUsers.map( x => ({
         id : x.id,
         name : x.name,
-        email : x.email || '',
+        email : x.email,
         phone : x.phone || '',
         birthdate : x.birthdate || '',
         role : x.role
@@ -35,10 +35,6 @@ export const updateUser = async ( req , reply) => {
         req.body.email? user.email = req.body.email : '' ;
         req.body.phone? user.phone = req.body.phone : '' ;
         req.body.birthdate? user.birthdate = req.body.birthdate : '' ;
-  /*       user.name = req.body.name;
-        user.email = req.body.email;
-        user.phone = req.body.phone;
-        user.birthdate = req.body.birthdate; */
         await user.save()
         return reply.code(200)
         .send ({ message : "User successfully updated"})

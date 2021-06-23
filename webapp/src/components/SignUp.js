@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -13,13 +13,13 @@ import Container from '@material-ui/core/Container';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Copyright from'./Copyright.js';
-import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
 import frLocale from "date-fns/locale/fr";
-
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/material.css'
+
+import UserApi from '../api/user.js'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -60,12 +60,12 @@ export default function SignUp() {
   const classes = useStyles();
 
   const [formData , setFormData] = useState({});
-  const [birthdate , setBirthdate] = useState();
   const [phone , setPhone] = useState();
   const [fieldError , setFieldError] = useState({});
   const [errorMess , setErrorMess] = useState({});
   const [formError , setFormError] = useState(false);
 
+  const [redirection, setRedirection] = useState(false)
 
   const handleChange = (e) =>{
     //console.log("champ ",e.target.name, ", valeur : ",e.target.value)
@@ -75,7 +75,9 @@ export default function SignUp() {
   }
 
   const handleDateChange = (date) => {
-    setBirthdate(date)
+    setFormData(prevState => ({
+      ...prevState, 'birthdate':date
+    }));
   }
 
   const checkMailFormat = () => {
@@ -88,10 +90,26 @@ export default function SignUp() {
     }
   };
 
-  const submitForm = () => {
+  const submitForm = async () => {
     if (formData.name && formData.email && formData.password && formData.password2){
-      console.log("Data done !!!",formData, 'date: ', birthdate, 'phone: ', phone)
+      //console.log("complet form Data",formData)
+      UserApi.register(formData)
+        .then( (response) => {
+          console.log(response)
+          //console.log(response.data, "/////", response.status)
+          if (response.status === 201){
+            // redirection login
+            setRedirection(true)
+          }
+        })
+        .catch( (err) => {
+          console.log(err);
+          setErrorMess({form: "Erreur lors de l'enregistrement. Veuillez réessayer plus tard !"})
+          setFormError(true);
+        })
+        
     } else {
+      setErrorMess({form: "Les champs marqués d'une étoile sont obligatoires !"})
       setFormError(true);
     }
   };
@@ -115,8 +133,17 @@ export default function SignUp() {
     checkMailFormat()
   }, [formData.email])
 
+  useEffect(() => {
+    if (phone){
+      setFormData(prevState => ({
+        ...prevState, 'phone':phone
+      }));
+    }
+  }, [phone])
+
   return (
     <Container component="main" maxWidth="xs">
+      {redirection ? <Redirect to="/signin" /> : ''}
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -188,7 +215,7 @@ export default function SignUp() {
                   label="Date de naissance"
                   maxDate={Date()}
                   format="dd/MM/yyyy"
-                  value={birthdate}
+                  value={formData.birthdate}
                   onChange={handleDateChange}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
@@ -229,7 +256,7 @@ export default function SignUp() {
         
         <Snackbar open={formError} autoHideDuration={5000} onClose={handleClose}>
           <MuiAlert elevation={6} variant="filled" severity="error">
-            Les champs marqués d'une étoile sont obligatoires !
+            {errorMess.form}
           </MuiAlert>
         </Snackbar>
       </div>

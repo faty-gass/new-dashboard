@@ -19,6 +19,8 @@ export const signup = async (req, reply) =>{
         const newUser = new User ({
           name : req.body.name,
           email : req.body.email,
+          phone : req.body.phone? req.body.phone : '',
+          birthdate : req.body.birthdate? req.body.birthdate : '',
           password : hashPwd
         })
         newUser.save()

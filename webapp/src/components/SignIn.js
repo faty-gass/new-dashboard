@@ -1,17 +1,17 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import {Link }from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-//import Link from '@material-ui/core/Link';
-import {Link }from 'react-router-dom'
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import Container from '@material-ui/core/Container';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
 import Copyright from'./Copyright.js';
 
@@ -28,11 +28,17 @@ const useStyles = makeStyles((theme) => ({
     backgroundSize: 'cover',
     backgroundPosition: 'center',
   },
+  page : {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   paper: {
     margin: theme.spacing(8, 4),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   avatar: {
     margin: theme.spacing(1),
@@ -64,71 +70,113 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn() {
   const classes = useStyles();
 
+  const [formData, setFormData] = useState({});
+  const [formError, setFormError] = useState(false);
+  const [ errorMess, setErrorMess] = useState({})
+  const [fieldError , setFieldError] = useState({});
+
+
+  const handleChange = (e) => {
+    setFormData(prevState => ({
+      ...prevState, [e.target.name]:e.target.value
+    }));
+  }
+
+  const checkMailFormat = () => {
+    if (formData.email && !formData.email.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)){
+      setErrorMess({email: "Merci d'entrer un email valide !"})
+      setFieldError({email : true})
+    } else {
+      setFieldError({email : false})
+      setErrorMess({email: ""})
+    }
+  };
+
+  const submitForm = () => {
+    console.log(formData)
+    if (formData.email && formData.password){
+
+    } else {
+      setFormError(true);
+      setErrorMess({form : "Tous les champs sont obligatoires !"})
+    }
+  }
+
+  const handleClose = () => {
+    setFormError(false);
+  };
+
+  useEffect( () => {
+    checkMailFormat()
+  }, [formData.email])
+
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
-      <Grid item xs={false} sm={4} md={7} className={classes.image} />
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-        <div className={classes.paper}>
+      <Grid item xs={false} sm={4} md={6} className={classes.image} />
+      <Grid className={classes.page} item xs={12} sm={8} md={6} component={Paper} elevation={6} square >
+        <Container className={classes.paper} maxWidth="xs">
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate>
             <TextField
+              error={fieldError.email}
               variant="outlined"
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
+              label="Adresse Email"
               name="email"
-              autoComplete="email"
-              autoFocus
+              value={formData.email}
+              onChange={handleChange}
+              helperText={errorMess.email}
             />
             <TextField
               variant="outlined"
               margin="normal"
               required
               fullWidth
+              label="Mot de passe"
               name="password"
-              label="Password"
               type="password"
-              id="password"
-              autoComplete="current-password"
+              value={formData.password}
+              onChange={handleChange}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
+
             <Button
               type="submit"
               fullWidth
               variant="contained"
               color="primary"
               className={classes.submit}
+              onClick={submitForm}
             >
-              Sign In
+              Connexion
             </Button>
-            <Grid container>
-              <Grid item xs>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
                 <Link href="#" className={classes.link} >
-                  Forgot password?
+                  Mot de passe oublié ?
                 </Link>
               </Grid>
-              <Grid item>
+              <Grid item xs={12} sm={6}>
                 <Link to="/signup" className={classes.link}>
-                  {"Don't have an account? Sign Up"}
+                  Pas de compte ? Inscrivez-vous !
                 </Link>
               </Grid>
             </Grid>
+            <Snackbar open={formError} autoHideDuration={5000} onClose={handleClose}>
+              <MuiAlert elevation={6} variant="filled" severity="error">
+                {errorMess.form}
+              </MuiAlert>
+            </Snackbar>
             <Box mt={5}>
               <Copyright />
             </Box>
-          </form>
-        </div>
+        </Container>
       </Grid>
     </Grid>
   );

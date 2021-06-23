@@ -1,5 +1,5 @@
 /* eslint-disable import/no-anonymous-default-export */
-import Api from "./Api";
+import Api from "./api";
 
 export default {
   register(form) {

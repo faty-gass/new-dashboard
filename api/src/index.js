@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import * as db from './db-connect.js'
 import fastifyJwt from 'fastify-jwt'
 import fastifyAuth from 'fastify-auth'
+import fastifyCors from 'fastify-cors'
 
 import routes from './routes/index.js';
 import decorator from './decorator.js'
@@ -26,6 +27,9 @@ const fastify = Fastify({
 fastify.register(db)
 fastify.register(fastifyJwt,{secret : process.env.JWT_SECRET})
 fastify.register(fastifyAuth)
+fastify.register(fastifyCors,{
+  origin: "*"
+})
 fastify.register(
   (instance, opts, done) => {
     decorator(instance);
