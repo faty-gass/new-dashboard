@@ -1,1 +1,3 @@
-telephone input : https://catamphetamine.gitlab.io/react-phone-number-input/
+telephone input : React-Phone-Input-2 https://www.npmjs.com/package/react-phone-input-2
+
+  

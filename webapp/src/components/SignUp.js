@@ -1,32 +1,32 @@
 import React, {useState, useEffect} from 'react';
 import { Link } from 'react-router-dom'
+import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-//import FormControlLabel from '@material-ui/core/FormControlLabel';
-//import Checkbox from '@material-ui/core/Checkbox';
-//import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import Copyright from'./Copyright.js';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
 import frLocale from "date-fns/locale/fr";
 
-import 'react-phone-number-input/style.css'
-import PhoneInput from 'react-phone-number-input'
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/material.css'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   avatar: {
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: theme.spacing(10, 0, 2),
   },
   link: {
     color : '#0000FF',
@@ -53,21 +53,67 @@ const useStyles = makeStyles((theme) => ({
     '&:visited': {
       color : 'purple'
     }
-  },
-  phoneInput : {
-
   }
 }));
 
 export default function SignUp() {
   const classes = useStyles();
 
-  const [selectedDate, setSelectedDate] = useState();
-  const [ phoneNum, setPhoneNum] = useState();
+  const [formData , setFormData] = useState({});
+  const [birthdate , setBirthdate] = useState();
+  const [phone , setPhone] = useState();
+  const [fieldError , setFieldError] = useState({});
+  const [errorMess , setErrorMess] = useState({});
+  const [formError , setFormError] = useState(false);
+
+
+  const handleChange = (e) =>{
+    //console.log("champ ",e.target.name, ", valeur : ",e.target.value)
+    setFormData(prevState => ({
+      ...prevState, [e.target.name]:e.target.value
+    }));
+  }
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
+    setBirthdate(date)
+  }
+
+  const checkMailFormat = () => {
+    if (formData.email && !formData.email.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)){
+      setErrorMess({email: "Merci d'entrer un email valide !"})
+      setFieldError({email : true})
+    } else {
+      setFieldError({email : false})
+      setErrorMess({email: ""})
+    }
   };
+
+  const submitForm = () => {
+    if (formData.name && formData.email && formData.password && formData.password2){
+      console.log("Data done !!!",formData, 'date: ', birthdate, 'phone: ', phone)
+    } else {
+      setFormError(true);
+    }
+  };
+
+  const handleClose = () => {
+    setFormError(false);
+  };
+
+  useEffect( () => {
+    if (formData.password !== formData.password2){
+      setErrorMess({password2: "Les  mots de passe doivent être identiques !"})
+      setFieldError({password2: true})
+    } else {
+      //console.log("mdp pareil !!!", "1:",formData.password, " 2:", formData.password2)
+      setErrorMess({password2: ""})
+      setFieldError({password2: false})
+    }
+  }, [formData.password2])
+
+  useEffect( () => {
+    checkMailFormat()
+  }, [formData.email])
 
   return (
     <Container component="main" maxWidth="xs">
@@ -77,65 +123,72 @@ export default function SignUp() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign up
+          Créer un compte
         </Typography>
-        <form className={classes.form} noValidate>
-          <Grid container spacing={2}>
+        
+          <Grid container spacing={2} className={classes.form}>
             <Grid item xs={12}>
               <TextField
-                autoComplete="fname"
-                name="firstName"
+                value={formData.name}
                 variant="outlined"
                 required
                 fullWidth
-                id="firstName"
+                name="name"
                 label="Nom"
-                autoFocus
+                onChange={handleChange}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                autoComplete="email"
-                name="email"
+                error={fieldError.email}
+                value={formData.email}
                 variant="outlined"
                 required
                 fullWidth
-                id="email"
-                label="Email Address"
+                name="email"
+                label="Adresse Email"
+                onChange={handleChange}
+                helperText={errorMess.email}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
+                value={formData.password}
                 variant="outlined"
                 required
                 fullWidth
                 name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
+                label="Mot de passe"
+                type="password" 
+                onChange={handleChange}
+                helperText={errorMess.password}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
+                error={fieldError.password2}
+                value={formData.password2}
                 variant="outlined"
                 required
                 fullWidth
-                name="passwordConfirm"
-                label="Confirm Password"
+                name="password2"
+                label="Confirmation mot de passe"
                 type="password"
-                id="passwordConfirm"
-                autoComplete="current-password"
+                onChange={handleChange}
+                helperText={errorMess.password2}
               />
             </Grid>
             <Grid item xs={12}>
               <MuiPickersUtilsProvider utils={DateFnsUtils} locale={frLocale}>
                 <KeyboardDatePicker
                   margin="normal"
-                  id="date-picker-dialog"
+                  inputVariant="outlined"
+                  fullWidth
+                  name="birthdate"
                   label="Date de naissance"
+                  maxDate={Date()}
                   format="dd/MM/yyyy"
-                  value={selectedDate}
+                  value={birthdate}
                   onChange={handleDateChange}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
@@ -146,12 +199,13 @@ export default function SignUp() {
 
             <Grid item xs={12}>
               <PhoneInput
-                className={classes.phoneInput}
-                PhoneInputCountryFlag-height={"80px"}
-                international
-                defaultCountry="FR"
-                value={phoneNum}
-                onChange={setPhoneNum}/>
+                country={'fr'}
+                name="Téléphone"
+                fullWidth
+                value={phone}
+                onChange={setPhone}
+                placeholder="(+33)1 23 45 67 89"
+              />
             </Grid>
 
           </Grid>
@@ -161,17 +215,23 @@ export default function SignUp() {
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={submitForm}
           >
-            Sign Up
+            Créer un compte
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
               <Link to="/signin" className={classes.link}>
-                Already have an account? Sign in
+                Vous avez déjà un compte ? Connectez-vous.
               </Link>
             </Grid>
           </Grid>
-        </form>
+        
+        <Snackbar open={formError} autoHideDuration={5000} onClose={handleClose}>
+          <MuiAlert elevation={6} variant="filled" severity="error">
+            Les champs marqués d'une étoile sont obligatoires !
+          </MuiAlert>
+        </Snackbar>
       </div>
       <Box mt={5}>
         <Copyright />
