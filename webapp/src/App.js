@@ -1,4 +1,5 @@
 //import logo from './logo.svg';
+import React, {useState} from 'react';
 import './App.css';
 import {
   BrowserRouter as Router,
@@ -10,6 +11,14 @@ import SignIn from './components/SignIn.js'
 
 
 function App() {
+
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  const setLoggedUser = (token) => {
+    localStorage.setItem("token", token);
+    setLoggedIn(true);
+  }
+
   return (
     <Router>
       <Switch>
@@ -17,25 +26,9 @@ function App() {
           <SignUp/>
         </Route>
         <Route path="/signin">
-          <SignIn/>
+          <SignIn logUser={setLoggedUser}/>
         </Route>
       </Switch>
-
-
-{/*       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
     </Router>
   );
 }

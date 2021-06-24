@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Link }from 'react-router-dom'
+import {Link, Redirect }from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,8 +13,10 @@ import Typography from '@material-ui/core/Typography';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
-import Copyright from'./Copyright.js';
+import PropTypes from 'prop-types';
 
+import Copyright from'./Copyright.js';
+import UserApi from '../api/user.js'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,7 +69,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function SignIn() {
+
+
+export default function SignIn(props) {
   const classes = useStyles();
 
   const [formData, setFormData] = useState({});
@@ -75,6 +79,7 @@ export default function SignIn() {
   const [ errorMess, setErrorMess] = useState({})
   const [fieldError , setFieldError] = useState({});
 
+  const [redirection, setRedirection] = useState(false)
 
   const handleChange = (e) => {
     setFormData(prevState => ({
@@ -93,9 +98,21 @@ export default function SignIn() {
   };
 
   const submitForm = () => {
-    console.log(formData)
+    //console.log(formData)
     if (formData.email && formData.password){
-
+      UserApi.login(formData)
+      .then((response) => {
+        console.log(response)
+        if (response.status === 200){
+          props.logUser(response.data.token)
+          setRedirection(true)
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+        setFormError(true);
+        setErrorMess({form : "Les identifiants ne sont pas valides !"})
+      })
     } else {
       setFormError(true);
       setErrorMess({form : "Tous les champs sont obligatoires !"})
@@ -112,6 +129,7 @@ export default function SignIn() {
 
   return (
     <Grid container component="main" className={classes.root}>
+      {redirection ? <Redirect to="/" /> : ''}
       <CssBaseline />
       <Grid item xs={false} sm={4} md={6} className={classes.image} />
       <Grid className={classes.page} item xs={12} sm={8} md={6} component={Paper} elevation={6} square >
@@ -180,4 +198,8 @@ export default function SignIn() {
       </Grid>
     </Grid>
   );
+}
+
+SignIn.propTypes = {
+  logUser: PropTypes.func.isRequired
 }
